@@ -141,8 +141,29 @@ def apply(lambda_exp, var):
     pass
 
 
-def beta_reduce(lhs, rhs, param):
-    pass
+def beta_reduce(exp):
+    func = exp[0]
+    param = exp[1]
+    print func, param
+    if param not in bound(func):
+        if type(func[2]).__name__ == 'unicode':
+            return replace(func[2], func[1], param)
+        else:
+            return walkmap(lambda x: replace(x, func[1], param),
+                           func[2])
+    else:
+        return None
+
+
+def alpha_reduce(exp, vs):
+    replacements = [char for char in u"abcdefghijklmnopqrstuvwxyz"
+                    if char not in bound(exp)
+                    and char not in vs]
+    replacement = replacements.pop()
+    for v in vs:
+        exp = walkmap(lambda x: replace(x, v, replacement),
+                           exp)
+    return exp
 
 
 def interpret(ast):
